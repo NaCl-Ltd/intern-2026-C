@@ -10,7 +10,11 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
-    @microposts = @user.microposts.paginate(page: params[:page])
+    if @user.pinned_micropost_id
+      @microposts = @user.microposts.reorder(Arel.sql("CASE WHEN id = #{@user.pinned_micropost_id} THEN 0 ELSE 1 END, created_at DESC")).paginate(page: params[:page])
+    else
+      @microposts = @user.microposts.paginate(page: params[:page])
+    end
   end
 
   def new
