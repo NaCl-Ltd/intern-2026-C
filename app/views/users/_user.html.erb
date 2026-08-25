@@ -3,6 +3,18 @@
   <%= link_to user.name, user %>
   <p class="user-introduction"><%= user.introduction %></p>
   <% if current_user.admin? && !current_user?(user) %>
+  <a href="<%= following_user_path(user) %>">
+    <strong id="following" class="stat">
+      <%= user.following.count %>
+    </strong>
+    following
+  </a>
+  <a href="<%= followers_user_path(user) %>">
+    <strong id="followers" class="stat">
+      <%= user.followers.count %>
+    </strong>
+    followers
+  </a>
     | <%= link_to "delete", user, data: { "turbo-method": :delete,
                                           turbo_confirm: "You sure?" } %>
   <% end %>
