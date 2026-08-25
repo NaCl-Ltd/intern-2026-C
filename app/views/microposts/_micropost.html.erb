@@ -12,6 +12,11 @@
     <% if current_user?(micropost.user) %>
       <%= link_to "delete", micropost, data: { "turbo-method": :delete,
                                                turbo_confirm: "You sure?" } %>
+      <% if current_user.pinned_micropost_id == micropost.id %>
+        | <%= button_to "固定解除", unpin_micropost_path(micropost), method: :patch, style: "display:inline;" %>
+      <% else %>
+        | <%= button_to "固定する", pin_micropost_path(micropost), method: :patch, style: "display:inline;" %>
+      <% end %>
     <% end %>
   </span>
 </li>

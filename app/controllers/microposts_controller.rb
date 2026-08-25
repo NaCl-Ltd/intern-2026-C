@@ -23,6 +23,16 @@ class MicropostsController < ApplicationController
       redirect_to request.referrer, status: :see_other
     end
   end
+  def pin
+    micropost = current_user.microposts.find(params[:id])
+    current_user.update(pinned_micropost: micropost)
+    redirect_back_or_to root_url
+  end
+
+  def unpin
+    current_user.update(pinned_micropost: nil)
+    redirect_back_or_to root_url
+  end
 
   private
 

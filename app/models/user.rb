@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_many :microposts, dependent: :destroy
+  belongs_to :pinned_micropost, class_name: "Micropost", optional: true
   has_many :active_relationships,  class_name:  "Relationship",
                                    foreign_key: "follower_id",
                                    dependent:   :destroy
@@ -52,6 +53,7 @@ class User < ApplicationRecord
   end
 
   # ユーザーのログイン情報を破棄する
+  # ユーザーのログイン情報を破棄する
   def forget
     update_attribute(:remember_digest, nil)
   end
@@ -88,9 +90,14 @@ class User < ApplicationRecord
   def feed
     following_ids = "SELECT followed_id FROM relationships
                      WHERE  follower_id = :user_id"
-    Micropost.where("user_id IN (#{following_ids})
+    posts = Micropost.where("user_id IN (#{following_ids})
                      OR user_id = :user_id", user_id: id)
              .includes(:user, image_attachment: :blob)
+    if pinned_micropost_id
+      posts.order(Arel.sql("CASE WHEN microposts.id = #{pinned_micropost_id} THEN 0 ELSE 1 END, microposts.created_at DESC"))
+    else
+      posts
+    end
   end
 
   # ユーザーをフォローする
