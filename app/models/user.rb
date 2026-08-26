@@ -89,12 +89,14 @@ class User < ApplicationRecord
   # ユーザーのステータスフィードを返す
   def feed
     following_ids = "SELECT followed_id FROM relationships
-                     WHERE  follower_id = :user_id"
+                     WHERE follower_id = :user_id"
     posts = Micropost.where("user_id IN (#{following_ids})
                      OR user_id = :user_id", user_id: id)
              .includes(:user, image_attachment: :blob)
+    posts.order(created_at: :DESC)
     if pinned_micropost_id
-      posts.order(Arel.sql("CASE WHEN microposts.id = #{pinned_micropost_id} THEN 0 ELSE 1 END, microposts.created_at DESC"))
+      pinned = Micropost.sanitize_sql_for_conditions(["CASE WHEN microposts.id = ? THEN 0 ELSE 1 END", pinned_micropost_id])
+      posts.reorder(Arel.sql(pinned))
     else
       posts
     end
