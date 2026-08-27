@@ -1,5 +1,7 @@
 class User < ApplicationRecord
   has_many :microposts, dependent: :destroy
+  has_many :likes, dependent: :destroy
+  has_many :liked_microposts, through: :likes, source: :micropost
   belongs_to :pinned_micropost, class_name: "Micropost", optional: true
   has_many :active_relationships,  class_name:  "Relationship",
                                    foreign_key: "follower_id",
