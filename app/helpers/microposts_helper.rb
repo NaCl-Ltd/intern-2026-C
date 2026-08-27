@@ -1,7 +1,7 @@
 module MicropostsHelper
   def highlight_hashtags(content)
     content.to_s.gsub(/(#[^\s#]+)/) do |hashtag|
-      content_tag(:span, hashtag, class: "hashtag")
+      link_to hashtag, "/tags/#{ERB::Util.url_encode(hashtag.delete_prefix('#'))}", class: "hashtag"
     end.html_safe
   end
 end
