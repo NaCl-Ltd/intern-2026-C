@@ -1,5 +1,5 @@
 class Micropost < ApplicationRecord
-  has_many :micropost_tags
+  has_many :micropost_tags, dependent: :destroy
   has_many :tags, through: :micropost_tags
   belongs_to :user
   has_many :likes, dependent: :destroy
